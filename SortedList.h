@@ -7,6 +7,10 @@ namespace mtm {
 
     template <typename T>
     class SortedList {
+        /* Type T must be able to compare elements , as in have "<,>,<=,>=,==" implemented the write way.
+         * also if printing is requested, T must have an implementation of "<<(ostream)"
+         * in order to have an output;
+         */
     public:
         /**
          *
@@ -54,4 +58,3 @@ namespace mtm {
      */
     };
 }
-
