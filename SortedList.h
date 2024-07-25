@@ -7,9 +7,14 @@ namespace mtm {
 
     template <typename T>
     class SortedList {
-        /* Type T must be able to compare elements , as in have "<,>,<=,>=,==" implemented the write way.
+        /* (1) Type T must be able to compare elements , as in have "<,>,<=,>=,==" implemented the write way.
          * also if printing is requested, T must have an implementation of "<<(ostream)"
          * in order to have an output;
+         *
+         * (2) Using a non-Const Iterator that it's operator * returns a reference of T, might lead
+         * to changes in the sortings of the sorted list which is unwanted!
+         * this may lead to also the ability to delete elements, where iterators that
+         * point to it may point to Null now and that could cause errors!
          */
     public:
         /**
