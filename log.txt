@@ -1,0 +1,48 @@
+* commit 9019870138832aac451c8b6903d6742bb8b9408f
+| Author: Awcapon <Awni.abedalghani@gmail.com>
+| Date:   Thu Jul 25 19:24:26 2024 +0300
+| 
+|     "Explaining the Filter function as described in the context of the question"
+| 
+|  SortedList.h | 7 +++++++
+|  1 file changed, 7 insertions(+)
+| 
+* commit cd8f129c248654a37b7eb0f6e8339722ae55c3bd
+| Author: Awcapon <Awni.abedalghani@gmail.com>
+| Date:   Thu Jul 25 19:14:47 2024 +0300
+| 
+|     "Explaining what might happen if we implement a non-const Iterator so that the operator * returns a T reference"
+| 
+|  SortedList.h | 7 ++++++-
+|  1 file changed, 6 insertions(+), 1 deletion(-)
+| 
+* commit 9d951720c960f62d4268435790b4c6cc479dc4b5
+| Author: Awcapon <Awni.abedalghani@gmail.com>
+| Date:   Thu Jul 25 19:03:41 2024 +0300
+| 
+|     "Explaining Type T requirements for SortedList"
+| 
+|  SortedList.h | 7 +++++--
+|  1 file changed, 5 insertions(+), 2 deletions(-)
+| 
+* commit 030bbc609feb61925f836f2873d71d772d1afb68
+  Author: Awcapon <awni.abed@campus.technion.ac.il>
+  Date:   Thu Jul 25 15:51:35 2024 +0300
+  
+      Starting a new project
+  
+   Person.cpp           |  51 +++++
+   Person.h             |  79 ++++++++
+   README.md            |   7 +
+   SortedList.h         |  57 ++++++
+   Task.cpp             |  83 ++++++++
+   Task.h               | 115 +++++++++++
+   TaskManager.h        |  75 +++++++
+   main.cpp             | 531 +++++++++++++++++++++++++++++++++++++++++++++++++
+   tests/test1.expected |   3 +
+   tests/test2.expected |   3 +
+   tests/test3.expected |  30 +++
+   tests/test4.expected |   3 +
+   tests/test5.expected |   3 +
+   tests/test6.expected |  15 ++
+   14 files changed, 1055 insertions(+)
