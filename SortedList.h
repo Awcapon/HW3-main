@@ -15,6 +15,13 @@ namespace mtm {
          * to changes in the sortings of the sorted list which is unwanted!
          * this may lead to also the ability to delete elements, where iterators that
          * point to it may point to Null now and that could cause errors!
+         *
+         * (3) Filter here is a function that receives a function variable (Predict),
+         * say it recieves a function Dividable_by_p which returns a boolean, true if dividable
+         * and false otherwise. loop through the elements of sortedList , send them to
+         * the received function and which ever returns true is added to new list.
+         * when all is done, we return the new list which is sorted and all elements
+         * are dividable by p
          */
     public:
         /**
