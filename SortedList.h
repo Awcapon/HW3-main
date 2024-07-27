@@ -39,6 +39,7 @@ namespace mtm {
         SortedList();
         SortedList(const SortedList& other);
         SortedList& operator=(const SortedList& other);
+        bool operator==(const SortedList& other);
         ~SortedList();
 
         class ConstIterator;
@@ -85,11 +86,11 @@ namespace mtm {
         Node* Current = Head;
         while(Current){
             Node *Next = Current->next;
-            delete(Current);
-            Current = Current->next;
+            delete Current;
+            Current = Next;
         }
-        Current = nullptr;
     }
+
     template <class T>
     void SortedList<T>::copyFrom(const SortedList& other) {
         Node* CurrentHead = other.Head;
@@ -109,8 +110,26 @@ namespace mtm {
     }
 
     template <class T>
+    bool SortedList<T> :: operator==(const SortedList& other){
+        const Node *originalNode = this->Head, *otherNode = other.Head;
+        if (this->Length() != other.Length())
+            return false;
+        while(originalNode && otherNode){
+            if(originalNode->data != otherNode->data){
+                return false;
+            }
+            originalNode = originalNode->next;
+            otherNode = otherNode->next;
+        }
+        if(!originalNode && !otherNode) {
+                return true;
+            }
+        return false;
+    }
+
+    template <class T>
     SortedList<T>& SortedList<T> :: operator=(const SortedList& other){
-        if(this == other){
+        if(*this == other){
             return *this;
         } else {
             Delete();
