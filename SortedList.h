@@ -95,7 +95,7 @@ namespace mtm {
     void SortedList<T>::copyFrom(const SortedList& other) {
         Node* CurrentHead = other.Head;
         while(CurrentHead) {
-            insert(other.data);
+            insert(CurrentHead->data);
             CurrentHead = CurrentHead->next;
         }
     }
@@ -115,7 +115,7 @@ namespace mtm {
         if (this->Length() != other.Length())
             return false;
         while(originalNode && otherNode){
-            if(originalNode->data != otherNode->data){
+            if (!(originalNode->data == otherNode->data)){
                 return false;
             }
             originalNode = originalNode->next;
