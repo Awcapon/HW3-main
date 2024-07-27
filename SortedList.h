@@ -140,7 +140,7 @@ namespace mtm {
         Head = nullptr;
         copyFrom(other);
     }
-
+/*
     template <class T>
     bool SortedList<T> :: operator==(const SortedList& other){
         const Node *originalNode = this->Head, *otherNode = other.Head;
@@ -158,16 +158,16 @@ namespace mtm {
             }
         return false;
     }
-
+*/
     template <class T>
     SortedList<T>& SortedList<T> :: operator=(const SortedList& other){
-        if(*this == other){
+        if(this == &other){
             return *this;
         } else {
             Delete();
             copyFrom(other);
-            return *this;
         }
+        return *this;
     }
 
     template<class T>
@@ -296,6 +296,6 @@ namespace mtm {
 
     template<typename T>
     bool SortedList<T> :: ConstIterator :: operator!=(const ConstIterator& other) const{
-        return current != other.node;
+        return current != other.current;
     }
 }
