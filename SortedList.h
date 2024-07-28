@@ -103,11 +103,11 @@ namespace mtm {
     template <class T>
     void SortedList<T>::insert(const T& data) {
         Node* nodeToInsert = new Node(data);
+        Node* currentNode = Head;
         if (!Head || nodeToInsert->data > Head->data) {
-            nodeToInsert->next = Head;
+            nodeToInsert->next = currentNode;
             Head = nodeToInsert;
         } else {
-            Node* currentNode = Head;
             while (currentNode->next && currentNode->next->data > data) {
                 currentNode = currentNode->next;
             }
@@ -118,10 +118,12 @@ namespace mtm {
 
     template <class T>
     void SortedList<T>::remove(const ConstIterator& it) {
-        if (it.node == nullptr || it.list != this) {
+        if (it.list != this) {
             throw std::invalid_argument("Invalid iterator");
         }
-
+        if(it.node == nullptr){
+            return;
+        }
         Node* current = Head;
         Node* prev = nullptr;
 
@@ -206,18 +208,20 @@ namespace mtm {
     template <typename T>
     const T& SortedList<T>::ConstIterator::operator*() const {
         if (node == nullptr) {
-            throw std::range_error("Dereferencing end iterator");
-        }
+            throw std::out_of_range("Dereferencing end iterator");
+        } else {
         return node->data;
+        }
     }
 
     template <typename T>
     typename SortedList<T>::ConstIterator& SortedList<T>::ConstIterator::operator++() {
         if (node == nullptr) {
-            throw std::range_error("Incrementing end iterator");
+            throw std::out_of_range("Incrementing end iterator");
+        } else {
+            node = node->next;
+            return *this;
         }
-        node = node->next;
-        return *this;
     }
 
     template <typename T>
