@@ -11,7 +11,7 @@ namespace mtm {
         struct Node {
             T data;
             Node* next;
-            Node(const T& data, Node* next = nullptr) : data(data), next(next) {}
+            explicit Node(const T& data, Node* next = nullptr) : data(data), next(next) {}
         };
 
         Node* Head;
@@ -19,27 +19,10 @@ namespace mtm {
         void Delete();
         void copyFrom(const SortedList& other);
 
-        /* (1) Type T must be able to compare elements , as in have "<,>,<=,>=,==" implemented the write way.
-         * also if printing is requested, T must have an implementation of "<<(ostream)"
-         * in order to have an output;
-         *
-         * (2) Using a non-Const Iterator that it's operator * returns a reference of T, might lead
-         * to changes in the sortings of the sorted list which is unwanted!
-         * this may lead to also the ability to delete elements, where iterators that
-         * point to it may point to Null now and that could cause errors!
-         *
-         * (3) Filter here is a function that receives a function variable (Predict),
-         * say it recieves a function Dividable_by_p which returns a boolean, true if dividable
-         * and false otherwise. loop through the elements of sortedList , send them to
-         * the received function and which ever returns true is added to new list.
-         * when all is done, we return the new list which is sorted and all elements
-         * are dividable by p
-         */
     public:
         SortedList();
         SortedList(const SortedList& other);
         SortedList& operator=(const SortedList& other);
-        bool operator==(const SortedList& other);
         ~SortedList();
 
         class ConstIterator;
@@ -54,81 +37,43 @@ namespace mtm {
         template<typename Predicate>
         SortedList<T> filter(Predicate predicate) const;
         template<typename Operation>
-        SortedList<T> apply(Operation op);
-        /**
-         *
-         * the class should support the following public interface:
-         * if needed, use =defualt / =delete
-         *
-         * constructors and destructor:
-         * 1. SortedList() - creates an empty list.
-         * 2. copy constructor
-         * 3. operator= - assignment operator
-         * 4. ~SortedList() - destructor
-         *
-         * iterator:
-         * 5. class ConstIterator;
-         * 6. begin method
-         * 7. end method
-         *
-         * functions:
-         * 8. insert - inserts a new element to the list
-         * 9. remove - removes an element from the list
-         * 10. length - returns the number of elements in the list
-         * 11. filter - returns a new list with elements that satisfy a given condition
-         * 12. apply - returns a new list with elements that were modified by an operation
-         */
-
+        SortedList<T> apply(Operation op) const;
     };
 
     template <class T>
     class SortedList<T>::ConstIterator {
-        const Node* current;
+        const SortedList<T>* list;
+        Node* node;
+        ConstIterator(const SortedList<T>* list, Node* node);
+        friend class SortedList;
+
     public:
-        ConstIterator(const Node* node = nullptr);
         ConstIterator(const ConstIterator& other) = default;
         ConstIterator& operator=(const ConstIterator& other) = default;
-        ~ConstIterator()=default;
+        ~ConstIterator() = default;
 
         const T& operator*() const;
         ConstIterator& operator++();
         bool operator!=(const ConstIterator& other) const;
-
-        friend class SortedList;
-        /**
-         * the class should support the following public interface:
-         * if needed, use =defualt / =delete
-         *
-         * constructors and destructor:
-         * 1. a ctor(or ctors) your implementation needs
-         * 2. copy constructor
-         * 3. operator= - assignment operator
-         * 4. ~ConstIterator() - destructor
-         *
-         * operators:
-         * 5. operator* - returns the element the iterator points to
-         * 6. operator++ - advances the iterator to the next element
-         * 7. operator!= - returns true if the iterator points to a different element
-         *
-         */
     };
 
     template <class T>
-    void SortedList<T> ::  Delete(){
-        Node* Current = Head;
-        while(Current){
-            Node *Next = Current->next;
-            delete Current;
-            Current = Next;
+    void SortedList<T>::Delete() {
+        Node* current = Head;
+        while (current) {
+            Node* next = current->next;
+            delete current;
+            current = next;
         }
+        Head = nullptr;
     }
 
     template <class T>
     void SortedList<T>::copyFrom(const SortedList& other) {
-        Node* CurrentHead = other.Head;
-        while(CurrentHead) {
-            insert(CurrentHead->data);
-            CurrentHead = CurrentHead->next;
+        Node* currentHead = other.Head;
+        while (currentHead) {
+            insert(currentHead->data);
+            currentHead = currentHead->next;
         }
     }
 
@@ -136,54 +81,34 @@ namespace mtm {
     SortedList<T>::SortedList() : Head(nullptr) {}
 
     template <class T>
-    SortedList<T>::SortedList(const SortedList<T> &other) {
-        Head = nullptr;
+    SortedList<T>::SortedList(const SortedList<T>& other) : Head(nullptr) {
         copyFrom(other);
     }
-/*
+
     template <class T>
-    bool SortedList<T> :: operator==(const SortedList& other){
-        const Node *originalNode = this->Head, *otherNode = other.Head;
-        if (this->length() != other.length())
-            return false;
-        while(originalNode && otherNode){
-            if (!(originalNode->data == otherNode->data)){
-                return false;
-            }
-            originalNode = originalNode->next;
-            otherNode = otherNode->next;
-        }
-        if(!originalNode && !otherNode) {
-                return true;
-            }
-        return false;
-    }
-*/
-    template <class T>
-    SortedList<T>& SortedList<T> :: operator=(const SortedList& other){
-        if(this == &other){
+    SortedList<T>& SortedList<T>::operator=(const SortedList& other) {
+        if (this == &other) {
             return *this;
-        } else {
-            Delete();
-            copyFrom(other);
         }
+        Delete();
+        copyFrom(other);
         return *this;
     }
 
-    template<class T>
-    SortedList<T> :: ~SortedList(){
+    template <class T>
+    SortedList<T>::~SortedList() {
         Delete();
     }
 
-    template<class T>
-    void SortedList<T> :: insert(const T& data){
+    template <class T>
+    void SortedList<T>::insert(const T& data) {
         Node* nodeToInsert = new Node(data);
-        if(!Head || nodeToInsert->data > Head->data){
+        if (!Head || nodeToInsert->data > Head->data) {
             nodeToInsert->next = Head;
             Head = nodeToInsert;
-        } else{
-            Node *currentNode = Head;
-            while(currentNode->next && currentNode->next->data > data){
+        } else {
+            Node* currentNode = Head;
+            while (currentNode->next && currentNode->next->data > data) {
                 currentNode = currentNode->next;
             }
             nodeToInsert->next = currentNode->next;
@@ -191,21 +116,21 @@ namespace mtm {
         }
     }
 
-    template<class T>
+    template <class T>
     void SortedList<T>::remove(const ConstIterator& it) {
-        if (!it.current) {
-            throw std::invalid_argument("Iterator points to null");
+        if (it.node == nullptr || it.list != this) {
+            throw std::invalid_argument("Invalid iterator");
         }
 
         Node* current = Head;
         Node* prev = nullptr;
 
-        while (current && current != it.current) {
+        while (current && current != it.node) {
             prev = current;
             current = current->next;
         }
 
-        if (current == it.current) {
+        if (current == it.node) {
             if (prev) {
                 prev->next = current->next;
             } else {
@@ -216,86 +141,91 @@ namespace mtm {
             throw std::invalid_argument("Iterator does not point to a valid node");
         }
     }
-    template<class T>
-    int SortedList<T> :: length() const{
-        Node * tempNode = Head;
+
+    template <class T>
+    int SortedList<T>::length() const {
         int count = 0;
-        while(tempNode){
+        Node* current = Head;
+        while (current) {
             count++;
-            tempNode = tempNode->next;
+            current = current->next;
         }
         return count;
     }
 
-    template<typename T>
-    template<typename Predicate>
-    SortedList<T> SortedList<T> :: filter(Predicate predicate) const{
-        SortedList<T> updatedList;
-        Node* currentNode = Head;
-        while(currentNode){
-            if(predicate(currentNode->data)){
-                updatedList.insert(currentNode->data);
+    template <class T>
+    template <typename Predicate>
+    SortedList<T> SortedList<T>::filter(Predicate predicate) const {
+        SortedList<T> result;
+        Node* current = Head;
+        while (current) {
+            if (predicate(current->data)) {
+                result.insert(current->data);
             }
-            currentNode = currentNode->next;
+            current = current->next;
         }
-        return updatedList;
+        return result;
     }
 
-    template<typename T>
-    template<typename Operation>
-    SortedList<T> SortedList<T> :: apply(Operation op){
-        SortedList<T> updatedNode;
-        Node* currentNode = Head;
-        while(currentNode){
-            T data = op(currentNode->data);
-            updatedNode.insert(data);
-            currentNode = currentNode->next;
+    template <class T>
+    template <typename Operation>
+    SortedList<T> SortedList<T>::apply(Operation op) const {
+        SortedList<T> result;
+        Node* current = Head;
+        while (current) {
+            T data = op(current->data);
+            result.insert(data);
+            current = current->next;
         }
-        return updatedNode;
+        return result;
     }
 
-    template<class T>
-    typename SortedList<T> :: ConstIterator SortedList<T> :: begin() const{
-        return ConstIterator(Head);
+    template <class T>
+    typename SortedList<T>::ConstIterator SortedList<T>::begin() const {
+        return ConstIterator(this, Head);
     }
 
-    template<class T>
-    typename SortedList<T> :: ConstIterator SortedList<T> :: begin() {
-        return ConstIterator(Head);
+    template <class T>
+    typename SortedList<T>::ConstIterator SortedList<T>::begin() {
+        return ConstIterator(this, Head);
     }
 
-    template<class T>
-    typename SortedList<T> :: ConstIterator SortedList<T> :: end() const{
-        return ConstIterator(nullptr);
+    template <class T>
+    typename SortedList<T>::ConstIterator SortedList<T>::end() const {
+        return ConstIterator(this, nullptr);
     }
 
-    template<class T>
-    typename SortedList<T> :: ConstIterator SortedList<T> :: end() {
-        return ConstIterator(nullptr);
+    template <class T>
+    typename SortedList<T>::ConstIterator SortedList<T>::end() {
+        return ConstIterator(this, nullptr);
     }
 
-    template<typename T>
-    SortedList<T> :: ConstIterator :: ConstIterator(const Node* node) : current(node){}
+    template <typename T>
+    SortedList<T>::ConstIterator::ConstIterator(const SortedList<T>* list, Node* node) : list(list), node(node) {}
 
-    template<typename T>
+    template <typename T>
     const T& SortedList<T>::ConstIterator::operator*() const {
-        if(current == nullptr){
+        if (node == nullptr) {
             throw std::range_error("Dereferencing end iterator");
         }
-        return current->data;
+        return node->data;
     }
 
-    template<typename T>
-    typename SortedList<T>::ConstIterator& SortedList<T> :: ConstIterator :: operator++(){
-        if(current == nullptr){
-            throw std::range_error("Adding to end iterator");
+    template <typename T>
+    typename SortedList<T>::ConstIterator& SortedList<T>::ConstIterator::operator++() {
+        if (node == nullptr) {
+            throw std::range_error("Incrementing end iterator");
         }
-        current = current->next;
+        node = node->next;
         return *this;
     }
 
-    template<typename T>
-    bool SortedList<T> :: ConstIterator :: operator!=(const ConstIterator& other) const{
-        return current != other.current;
+    template <typename T>
+    bool SortedList<T>::ConstIterator::operator!=(const ConstIterator& other) const {
+        if (list != other.list) {
+            throw std::invalid_argument("Comparing iterators from different lists");
+        }
+        return node != other.node;
     }
+
 }
