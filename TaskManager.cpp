@@ -1,35 +1,28 @@
 #include "TaskManager.h"
 
-
 TaskManager::TaskManager() : numPersons(0), taskId(0) {
 
-    personsArray = new Person*[MAX_PERSONS]();
+    for (int i = 0; i < MAX_PERSONS; ++i) {
 
-}
-
-TaskManager::~TaskManager() {
-
-    for (int i = 0; i < numPersons; i++) {
-
-        delete personsArray[i];
+        personsArray[i] = nullptr;
 
     }
-
-    delete[] personsArray;
 }
 
 void TaskManager::assignTask(const std::string& personName, const Task& task) {
 
-    for (int i = 0; i < numPersons; i++) {
+    for (int i = 0; i < numPersons; ++i) {
 
-        if (personsArray[i] != nullptr && personsArray[i]->getName() ==
-        personName) {
-            Task newTask(taskId++, task.getType(),
-                         task.getDescription());
+        if (personsArray[i] != nullptr && personsArray[i]->getName() == personName) {
+
+            Task newTask(task.getPriority(), task.getType(), task.getDescription());
+
+            newTask.setId(taskId++);
 
             personsArray[i]->assignTask(newTask);
 
             return;
+
         }
     }
 
@@ -39,68 +32,101 @@ void TaskManager::assignTask(const std::string& personName, const Task& task) {
 
     }
 
-    Person* newPerson = new Person(personName);
+    for (int i = 0; i < numPersons; ++i) {
 
-    Task newTask(taskId++, task.getType(), task.getDescription());
+        if (personsArray[i] != nullptr && personsArray[i]->getName() == personName) {
 
-    newPerson->assignTask(newTask);
+            delete personsArray[i];
 
-    personsArray[numPersons++] = newPerson;
+            personsArray[i] = nullptr;
+
+            break;
+        }
+    }
+
+    personsArray[numPersons] = new Person(personName);
+
+    Task newTask(task.getPriority(), task.getType(), task.getDescription());
+
+    newTask.setId(taskId++);
+
+    personsArray[numPersons]->assignTask(newTask);
+
+    ++numPersons;
 
 }
 
+
+
+
 void TaskManager::completeTask(const std::string& personName) {
 
-    for (int i = 0; i < numPersons; i++) {
+    for (int i = 0; i < numPersons; ++i) {
 
         if (personsArray[i] != nullptr && personsArray[i]->getName() == personName) {
 
             personsArray[i]->completeTask();
 
             return;
+
         }
     }
-    std::cout << "Error: No person with name " << personName << " found." << std::endl;
+
 }
 
 void TaskManager::bumpPriorityByType(TaskType type, int priorityBump) {
 
+    if (priorityBump < 0) {
+
+        return;
+
+    }
+
     for (int i = 0; i < numPersons; i++) {
 
-        if (personsArray[i] != nullptr) {
+        if (personsArray[i]!= nullptr) {
 
             SortedList<Task> tasks = personsArray[i]->getTasks();
 
-            for (auto it = tasks.begin(); it != tasks.end(); ++it) {
+            SortedList<Task> newTasks;
 
-                Task task = *it;
+            for (const Task& task : tasks) {
 
                 if (task.getType() == type) {
 
                     int newPriority = task.getPriority() + priorityBump;
 
-                    tasks.remove(it);
+                    if (newPriority > 100) {
 
-                    Task newTask(newPriority, task.getType(), task.getDescription());
+                        newPriority = 100;
 
-                    tasks.insert(newTask);
+                    }
+                    Task updatedTask(newPriority, task.getType(), task.getDescription());
+
+                    updatedTask.setId(task.getId());
+
+
+                    newTasks.insert(updatedTask);
+
+                } else {
+
+                    newTasks.insert(task);
+
                 }
             }
-            personsArray[i]->setTasks(tasks);
+
+            personsArray[i]->setTasks(newTasks);
         }
     }
 }
 
-
-
-
 void TaskManager::printAllEmployees() const {
 
-    for (int i = 0; i < numPersons; i++) {
+    for (int i = 0; i < numPersons; ++i) {
 
-        if (personsArray[i] != nullptr) {
+        if (personsArray[i]!= nullptr) {
 
-            std::cout << *personsArray[i] << std::endl;
+            std::cout << *(personsArray[i]) << std::endl;
 
         }
     }
@@ -108,25 +134,37 @@ void TaskManager::printAllEmployees() const {
 
 void TaskManager::printAllTasks() const {
 
-    for (int i = 0; i < numPersons; i++) {
+    SortedList<Task> allTasks;
 
-        if (personsArray[i] != nullptr) {
+    for (int i = 0; i < numPersons; ++i) {
+
+        if (personsArray[i]!= nullptr) {
 
             const SortedList<Task>& tasks = personsArray[i]->getTasks();
 
+
             for (const Task& task : tasks) {
 
-                std::cout << task << std::endl;
+                allTasks.insert(task);
             }
         }
     }
+
+    for (const Task& task : allTasks) {
+
+        std::cout << task << std::endl;
+
+    }
+
 }
 
 void TaskManager::printTasksByType(TaskType type) const {
 
-    for (int i = 0; i < numPersons; i++) {
+    SortedList<Task> tasksByType;
 
-        if (personsArray[i] != nullptr) {
+    for (int i = 0; i < numPersons; ++i) {
+
+        if (personsArray[i]!= nullptr) {
 
             const SortedList<Task>& tasks = personsArray[i]->getTasks();
 
@@ -134,11 +172,17 @@ void TaskManager::printTasksByType(TaskType type) const {
 
                 if (task.getType() == type) {
 
-                    std::cout << task << std::endl;
+                    tasksByType.insert(task);
 
                 }
+
             }
         }
     }
 
+    for (const Task& task : tasksByType) {
+
+        std::cout << task << std::endl;
+
+    }
 }

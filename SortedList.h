@@ -42,9 +42,8 @@ namespace mtm {
 
     template <class T>
     class SortedList<T>::ConstIterator {
-        const SortedList<T>* list;
         Node* node;
-        ConstIterator(const SortedList<T>* list, Node* node);
+        ConstIterator(Node* node);
         friend class SortedList;
 
     public:
@@ -103,11 +102,14 @@ namespace mtm {
     template <class T>
     void SortedList<T>::insert(const T& data) {
         Node* nodeToInsert = new Node(data);
-        Node* currentNode = Head;
-        if (!Head || nodeToInsert->data > Head->data) {
-            nodeToInsert->next = currentNode;
+
+        if (!Head) {
+            Head = nodeToInsert;
+        } else if(nodeToInsert->data > Head->data){
+            nodeToInsert->next = Head;
             Head = nodeToInsert;
         } else {
+            Node* currentNode = Head;
             while (currentNode->next && currentNode->next->data > data) {
                 currentNode = currentNode->next;
             }
@@ -117,10 +119,7 @@ namespace mtm {
     }
 
     template <class T>
-    void SortedList<T>::remove(const ConstIterator& it) {
-        if (it.list != this) {
-            throw std::invalid_argument("Invalid iterator");
-        }
+    void SortedList<T>::remove(const SortedList::ConstIterator &it) {
         if(it.node == nullptr){
             return;
         }
@@ -184,33 +183,33 @@ namespace mtm {
 
     template <class T>
     typename SortedList<T>::ConstIterator SortedList<T>::begin() const {
-        return ConstIterator(this, Head);
+        return ConstIterator(Head);
     }
 
     template <class T>
     typename SortedList<T>::ConstIterator SortedList<T>::begin() {
-        return ConstIterator(this, Head);
+        return ConstIterator(Head);
     }
 
     template <class T>
     typename SortedList<T>::ConstIterator SortedList<T>::end() const {
-        return ConstIterator(this, nullptr);
+        return ConstIterator(nullptr);
     }
 
     template <class T>
     typename SortedList<T>::ConstIterator SortedList<T>::end() {
-        return ConstIterator(this, nullptr);
+        return ConstIterator(nullptr);
     }
 
     template <typename T>
-    SortedList<T>::ConstIterator::ConstIterator(const SortedList<T>* list, Node* node) : list(list), node(node) {}
+    SortedList<T>::ConstIterator::ConstIterator(Node* node) : node(node) {}
 
     template <typename T>
     const T& SortedList<T>::ConstIterator::operator*() const {
         if (node == nullptr) {
-            throw std::out_of_range("Dereferencing end iterator");
+            throw std::range_error("Dereferencing end iterator");
         } else {
-        return node->data;
+            return node->data;
         }
     }
 
@@ -226,9 +225,6 @@ namespace mtm {
 
     template <typename T>
     bool SortedList<T>::ConstIterator::operator!=(const ConstIterator& other) const {
-        if (list != other.list) {
-            throw std::invalid_argument("Comparing iterators from different lists");
-        }
         return node != other.node;
     }
 

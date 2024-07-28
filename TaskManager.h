@@ -15,11 +15,13 @@ private:
     /**
      * @brief Maximum number of persons the TaskManager can handle.
      */
-    int numPersons;
-    Person** personsArray;
     static const int MAX_PERSONS = 10;
-    int taskId;
 
+    int numPersons;
+
+    Person* personsArray[MAX_PERSONS];
+
+    int taskId;
 
     // Note - Additional private fields and methods can be added if needed.
 
@@ -30,7 +32,6 @@ public:
      * Note - you may add =default if needed.
      */
     TaskManager();
-    ~TaskManager();
 
     /**
      * @brief Deleted copy constructor to prevent copying of TaskManager objects.
