@@ -2,6 +2,10 @@
 #pragma once
 
 #include "Task.h"
+#include "Person.h"
+#include "SortedList.h"
+#include <iostream>
+#include <string>
 
 /**
  * @brief Class managing tasks assigned to multiple persons.
@@ -11,7 +15,11 @@ private:
     /**
      * @brief Maximum number of persons the TaskManager can handle.
      */
+    int numPersons;
+    Person** personsArray;
     static const int MAX_PERSONS = 10;
+    int taskId;
+
 
     // Note - Additional private fields and methods can be added if needed.
 
@@ -22,6 +30,7 @@ public:
      * Note - you may add =default if needed.
      */
     TaskManager();
+    ~TaskManager();
 
     /**
      * @brief Deleted copy constructor to prevent copying of TaskManager objects.
