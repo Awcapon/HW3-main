@@ -17,12 +17,11 @@ private:
      */
     static const int MAX_PERSONS = 10;
 
+    Person personsArray[MAX_PERSONS];
+
     int numPersons;
 
-    Person* personsArray[MAX_PERSONS];
-
     int taskId;
-
     // Note - Additional private fields and methods can be added if needed.
 
 public:

@@ -26,7 +26,6 @@ namespace mtm {
         ~SortedList();
 
         class ConstIterator;
-
         ConstIterator begin();
         ConstIterator end();
         ConstIterator begin() const;
@@ -43,7 +42,7 @@ namespace mtm {
     template <class T>
     class SortedList<T>::ConstIterator {
         Node* node;
-        ConstIterator(Node* node);
+        explicit ConstIterator(Node* node);
         friend class SortedList;
 
     public:
@@ -69,10 +68,21 @@ namespace mtm {
 
     template <class T>
     void SortedList<T>::copyFrom(const SortedList& other) {
-        Node* currentHead = other.Head;
-        while (currentHead) {
-            insert(currentHead->data);
-            currentHead = currentHead->next;
+        if (other.Head == nullptr) {
+            Head = nullptr;
+            return;
+        }
+        Delete();
+        // Copy the first node
+        Head = new Node(other.Head->data);
+        Node* current = Head;
+        Node* otherCurrent = other.Head->next;
+
+        // Copy the remaining nodes
+        while (otherCurrent) {
+            current->next = new Node(otherCurrent->data);
+            current = current->next;
+            otherCurrent = otherCurrent->next;
         }
     }
 
@@ -86,11 +96,11 @@ namespace mtm {
 
     template <class T>
     SortedList<T>& SortedList<T>::operator=(const SortedList& other) {
-        if (this == &other) {
-            return *this;
+        if (this != &other) {
+            SortedList<T> temp(other);
+            //using already existing swap function for any template;
+            copyFrom(temp);
         }
-        Delete();
-        copyFrom(other);
         return *this;
     }
 
